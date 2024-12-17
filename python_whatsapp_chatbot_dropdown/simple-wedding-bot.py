@@ -71,7 +71,7 @@ def webhook():
 
     elif incoming_msg in [3, "3", "rsvp"]:
         message.body(
-            "🎟 **RSVP**:\n"
+            "🎟 RSVP:\n"
             "Are you attending? Reply with 'Yes' or 'No'.\n"
             "If Yes, how many people? (e.g., 'Yes 2')"
         )
@@ -80,34 +80,34 @@ def webhook():
 
     elif incoming_msg in [4, "4", "transportation"]:
         message.body(
-            "🚌 **Transportation**:\n"
+            "🚌 Transportation:\n"
             "Do you need a ride? Join the shuttle group by following this link: https://example.com/busgroup"
         )
 
     elif incoming_msg in [5, "5", "travel"]:
         message.body(
-            "🏨 **Travel Recommendations**:\n"
-            "- **Hotels**: https://example.com/hotels\n"
-            "- **Restaurants**: https://example.com/restaurants\n"
-            "- **Attractions**: https://example.com/attractions"
+            "🏨 Travel Recommendations:\n"
+            "- Hotels: https://example.com/hotels\n"
+            "- Restaurants: https://example.com/restaurants\n"
+            "- Attractions: https://example.com/attractions"
         )
 
     elif incoming_msg in [6, "6", "registry"]:
         message.body(
-            "💝 **Wedding Registry**:\n"
+            "💝 Wedding Registry:\n"
             "Contribute to our honeymoon here: https://example.com/honeymoonfund"
         )
 
     elif incoming_msg in [7, "7", "vendors"]:
         message.body(
-            "📇 **Vendor Contacts**:\n"
+            "📇 Liked our vendors? Contact them!:\n"
             "- Photographer: Jane Doe (jane@example.com)\n"
             "- Caterer: ABC Catering (contact@abc.com)"
         )
 
     elif incoming_msg in [8, "8", "flying"]:
         message.body(
-            "✈️ **Recommended Airlines**:\n"
+            "✈️ Recommended Israeli Airlines:\n"
             "- El Al\n"
             "- Arkia\n"
             "- Israir"
@@ -115,7 +115,7 @@ def webhook():
 
     elif incoming_msg in [9, "9", "menu"]:
         message.body(
-            "🍽 **Dinner Menu**:\n"
+            "🍽 Dinner Menu:\n"
             "- Starter: Burrata & Tomatoes\n"
             "- Main: Grilled Sea Bass / Vegan Risotto\n"
             "- Dessert: Tiramisu"
@@ -123,7 +123,7 @@ def webhook():
 
     elif incoming_msg in [10, "10", "contact"]:
         message.body(
-            "📱 **Groom & Bride Numbers**:\n"
+            "📱Groom & Bride Numbers:\n"
             "- Michael: +972 50-387-6660\n"
             "- Gioia: +972 52-455-0286"
         )
@@ -135,6 +135,9 @@ def webhook():
         )
     print(str(response))
     return str(response)
+
+# table number?
+# switch to drop down menu with buttons
 
 # Exempt the /webhook route from CSRF
 csrf.exempt(webhook)
