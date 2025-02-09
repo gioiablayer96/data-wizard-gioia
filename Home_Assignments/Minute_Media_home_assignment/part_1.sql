@@ -69,27 +69,27 @@ order by 2 desc; --mobile desktop and tablet are the devices with highest number
 select browser, count(distinct sessionid) num_sessions
 from `mmtestout.gioiablayer.dsEmployeeTestFinal`
 group by 1
-order by 2 desc --mobile chrome and mobile safari are the most common browsers
+order by 2 desc; --mobile chrome and mobile safari are the most common browsers
 
 -- what's the platform with the higher total number of sessions?
 select platform, count(distinct sessionid) num_sessions
 from `mmtestout.gioiablayer.dsEmployeeTestFinal`
 group by 1
-order by 2 desc -- android and iOS are the most common platforms
+order by 2 desc; -- android and iOS are the most common platforms
 
 -- what's the platformVersion with the higher total number of sessions?
 
 select platformVersion, count(distinct sessionid) num_sessions
 from `mmtestout.gioiablayer.dsEmployeeTestFinal`
 group by 1
-order by 2 desc -- 10 and 17.6.1 versions are the most common
+order by 2 desc; -- 10 and 17.6.1 versions are the most common
 
 -- what's the event with the higher total number of sessions?
 
 select event, count(distinct sessionid) num_sessions
 from `mmtestout.gioiablayer.dsEmployeeTestFinal`
 group by 1
-order by 2 desc --pageView and session are the most common types of events
+order by 2 desc; --pageView and session are the most common types of events
 
 -- can we spot these sessions: sessions that do not have session and pageView events reported (sessions from our clients that do not belong to our owned and operated sites)
 
@@ -142,7 +142,7 @@ select EXTRACT(DAYOFWEEK FROM time_utc) AS day_of_week, -- Sunday = 1, Monday = 
 from `mmtestout.gioiablayer.dsEmployeeTestFinal`
 where device is not null and browser is not null and platform is not null and platformVersion is not null
 group by 1,2,3,4,5,6,7
-order by 8 desc
+order by 8 desc;
 -- the most common profile is: pageViews done on wednseday night from a mobile android device, with chrome browser v10.
 
 -- do we have multiple browser per session?
@@ -151,7 +151,7 @@ select sessionid, count(distinct browser) as num_browsers
 from `mmtestout.gioiablayer.dsEmployeeTestFinal`
 group by 1
 having count(distinct browser) > 1
-order by 2 desc -- 69,707 (0.06% of sessions) have more than 1 browser
+order by 2 desc; -- 69,707 (0.06% of sessions) have more than 1 browser
 
 
 -- do we have multiple platform per session?
@@ -160,7 +160,7 @@ select sessionid, count(distinct platform) as num_platforms
 from `mmtestout.gioiablayer.dsEmployeeTestFinal`
 group by 1
 having count(distinct platform) > 1
-order by 2 desc -- 20,920 (0.02% of sessions) have more than 1 platform
+order by 2 desc; -- 20,920 (0.02% of sessions) have more than 1 platform
 
 -- do we have multiple platformVersion per session?
 
@@ -168,7 +168,7 @@ select sessionid, count(distinct platformVersion) as num_platformV
 from `mmtestout.gioiablayer.dsEmployeeTestFinal`
 group by 1
 having count(distinct platformVersion) > 1
-order by 2 desc -- 32,183 (0.03% of sessions) have more than 1 platformVersion
+order by 2 desc; -- 32,183 (0.03% of sessions) have more than 1 platformVersion
 
 -- do we have multiple event per session?
 
@@ -176,7 +176,7 @@ select sessionid, count(distinct event) as num_events
 from `mmtestout.gioiablayer.dsEmployeeTestFinal`
 group by 1
 having count(distinct event) > 1
-order by 2 desc -- 110,529,806 (98% of sessionid) have more than 1 events.
+order by 2 desc; -- 110,529,806 (98% of sessionid) have more than 1 events.
 
 
 -- missing values in device column (if more than 30% --> imputation is not worth it and i drop the column)
@@ -189,7 +189,7 @@ order by 2 desc
 ))
 FROM `mmtestout.gioiablayer.dsEmployeeTestFinal`
 group by 1
-order by 2 desc -- 8% missing values in device
+order by 2 desc; -- 8% missing values in device
 
 -- missing values in browser column
 
@@ -202,7 +202,7 @@ order by 2 desc
 ))
 FROM `mmtestout.gioiablayer.dsEmployeeTestFinal`
 group by 1
-order by 2 desc -- 10% of missing values in browser
+order by 2 desc; -- 10% of missing values in browser
 
 -- missing values in platform column
 
@@ -215,7 +215,7 @@ order by 2 desc
 ))
 FROM `mmtestout.gioiablayer.dsEmployeeTestFinal`
 group by 1
-order by 2 desc -- 10% of missing values in platform
+order by 2 desc; -- 10% of missing values in platform
 
 -- missing values in platformVersion column
 
@@ -228,7 +228,7 @@ order by 2 desc
 ))
 FROM `mmtestout.gioiablayer.dsEmployeeTestFinal`
 group by 1
-order by 2 desc -- 10% of missing values in platform
+order by 2 desc; -- 10% of missing values in platform
 
 -- missing values in events column: NO missing values
 
@@ -241,13 +241,13 @@ order by 2 desc
 ))
 FROM `mmtestout.gioiablayer.dsEmployeeTestFinal`
 group by 1
-order by 2 desc
+order by 2 desc;
 
 -- descriptive statistics of revenue: missing values, mean, median, min, max
 
 select count(*), count(distinct sessionid)
 FROM `mmtestout.gioiablayer.dsEmployeeTestFinal`
-where revenue is null -- 112,876,495 (99% of sessions, the revenue is null)
+where revenue is null; -- 112,876,495 (99% of sessions, the revenue is null)
 
 
 SELECT
@@ -257,7 +257,7 @@ SELECT
 FROM
   `mmtestout.gioiablayer.dsEmployeeTestFinal` --25 percentile is 0.00149. 50 percentile is 0.00338, 75 percentile is 0.0059
 WHERE
-  revenue IS NOT NULL
+  revenue IS NOT NULL;
 
 SELECT
   AVG(revenue) AS avg_revenue,
@@ -286,7 +286,7 @@ FROM
 WHERE
   revenue IS NOT NULL
 group by 1
-order by 2 desc -- morning is the time range with avg highest revenue per session
+order by 2 desc; -- morning is the time range with avg highest revenue per session
 
 -- in which time period (day of week) do we have the highest average revenue?
 
@@ -299,7 +299,7 @@ FROM
 WHERE
   revenue IS NOT NULL
 group by 1
-order by 2 desc --friday is the day with highest avg revenue
+order by 2 desc; --friday is the day with highest avg revenue
 
 -- for which device do we have the highest average revenue?
 
@@ -326,7 +326,7 @@ select count(distinct sessionid)
 FROM
   `mmtestout.gioiablayer.dsEmployeeTestFinal`
 WHERE
-  revenue IS NOT NULL -- from power analysis, for a 98% confidence level and 1% error margin i should have at least 15,000 sessionid for statistically significant inference (because the finite population is of 88M sessions).
+  revenue IS NOT NULL; -- from power analysis, for a 98% confidence level and 1% error margin i should have at least 15,000 sessionid for statistically significant inference (because the finite population is of 88M sessions).
 
 select
   browser,
@@ -338,7 +338,7 @@ WHERE
   revenue IS NOT NULL
 group by 1
 having count(distinct sessionid) > 15000
-order by 2 desc --duckduck go is the most lucrative browsers (statistically significant)
+order by 2 desc; --duckduck go is the most lucrative browsers (statistically significant)
 
 -- for which platform do we have the highest average revenue?
 
