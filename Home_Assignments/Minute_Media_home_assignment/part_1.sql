@@ -341,29 +341,141 @@ having count(distinct sessionid) > 15000
 order by 2 desc; --duckduck go is the most lucrative browsers (statistically significant)
 
 -- for which platform do we have the highest average revenue?
+select
+  platform,
+  avg(revenue) avg_revenue,
+  count(distinct sessionid) as num_sessions
+FROM
+  `mmtestout.gioiablayer.dsEmployeeTestFinal`
+WHERE
+  revenue IS NOT NULL
+group by 1
+having count(distinct sessionid) > 15000
+order by 2 desc; -- android and linus are the platforms with statistically significant higher revenue
+
 
 -- for which platformVersion do we have the highest average revenue?
 
+select
+  platformVersion,
+  avg(revenue) avg_revenue,
+  count(distinct sessionid) as num_sessions
+FROM
+  `mmtestout.gioiablayer.dsEmployeeTestFinal`
+WHERE
+  revenue IS NOT NULL
+group by 1
+having count(distinct sessionid) > 15000
+order by 2 desc; --version 10 of the platform has the highest avg revenue (significant)
+
 -- for which event do we have the highest average revenue?
+
+select
+  event,
+  avg(revenue) avg_revenue,
+  count(distinct sessionid) as num_sessions
+FROM
+  `mmtestout.gioiablayer.dsEmployeeTestFinal`
+WHERE
+  revenue IS NOT NULL
+group by 1
+having count(distinct sessionid) > 15000
+order by 2 desc; -- video impression and display impression are the events with highest avg revenue
 
 -- for which profile/segment do we have the highest average revenue?
 
+select
+CASE
+    WHEN EXTRACT(HOUR FROM time_utc) BETWEEN 0 AND 5 THEN 'night'
+    WHEN EXTRACT(HOUR FROM time_utc) BETWEEN 6 AND 11 THEN 'morning'
+    WHEN EXTRACT(HOUR FROM time_utc) BETWEEN 12 AND 17 THEN 'afternoon'
+    ELSE 'evening'
+  END AS time_range,
+  EXTRACT(DAYOFWEEK FROM time_utc) AS day_of_week,
+  CASE
+    WHEN LOWER(device) IN ('phone', 'mobile') THEN 'mobile'
+    ELSE LOWER(device)
+  END AS device_category,
+  browser,
+  platform,
+  platformVersion,
+  event,
+  avg(revenue) avg_revenue,
+  count(distinct sessionid) as num_sessions
+FROM
+  `mmtestout.gioiablayer.dsEmployeeTestFinal`
+WHERE
+  revenue IS NOT NULL and browser is not null and platform is not null and platformVersion is not null
+group by 1,2,3,4,5,6,7
+having count(distinct sessionid) > 15000
+order by 8 desc;
+-- videoImpressions done during sunday morning from chrome mobile (v10) on an android device have the highest average revenue (statistically significant)
 
--- If we split the revenue in its distribution, how many sessions do we have per quartile?
+-- create a CSV with aggregated data - can i answer some of the above questions with aggregated data?
 
--- what's the most used device per weekday/ time range/ hour?
+SELECT
+  DATE(time_utc) AS date,
+  EXTRACT(HOUR FROM time_utc) AS hour,
+  EXTRACT(DAYOFWEEK FROM time_utc) AS day_of_week, -- Sunday = 1, Monday = 2, ..., Saturday = 7
+  CASE
+    WHEN EXTRACT(HOUR FROM time_utc) BETWEEN 0 AND 5 THEN 'night'
+    WHEN EXTRACT(HOUR FROM time_utc) BETWEEN 6 AND 11 THEN 'morning'
+    WHEN EXTRACT(HOUR FROM time_utc) BETWEEN 12 AND 17 THEN 'afternoon'
+    ELSE 'evening'
+  END AS time_range,
+  CASE
+    WHEN LOWER(device) IN ('phone', 'mobile') THEN 'mobile'
+    ELSE LOWER(device)
+  END AS device,
+  browser,
+  platform,
+  platformVersion,
+  event,
+  count(distinct sessionid) num_distinct_sessions,
+  sum(revenue) total_revenue
+FROM
+  `mmtestout.gioiablayer.dsEmployeeTestFinal`
+where
+device is not null
+and device not in ('crawler')
+and browser is not null
+and platform is not null
+and platformVersion is not null
+and revenue is not null
+and sessionid not in (WITH filtered_events AS (
+  SELECT
+    sessionid,
+    ARRAY_AGG(DISTINCT event) AS event_types
+  FROM
+    `mmtestout.gioiablayer.dsEmployeeTestFinal`
+  GROUP BY
+    sessionid
+),
+invalid_sessions AS (
+  SELECT
+    sessionid
+  FROM
+    filtered_events
+  WHERE
+    -- Ensure no 'session' or 'pageView' events are present
+    NOT EXISTS (
+      SELECT 1
+      FROM UNNEST(event_types) AS event
+      WHERE event IN ('session', 'pageView')
+    )
+    AND
+    -- Ensure only the specified events are present
+    ARRAY_LENGTH(
+      ARRAY(
+        SELECT event
+        FROM UNNEST(event_types) AS event
+        WHERE event NOT IN ('videoPlayerEmbed', 'displayImpression', 'videoImpression')
+      )
+    ) = 0
+)
+SELECT distinct sessionid
+FROM
+  invalid_sessions)
+group by 1,2,3,4,5,6,7,8,9
 
--- what's the most used browser per weekday/ time range/ hour?
-
--- what's the most used platform per weekday/ time range/ hour?
-
--- what's the most used platformVersion per weekday/ time range/ hour?
-
--- what's the most frequent (number of distinct session_id) combination of device-browser-platform-platformVersion?
-
--- what's the most frequent event per weekday/ time range/ hour?
-
--- sessionid distribution by weekday
-
--- sessionid distribution by time range
 
