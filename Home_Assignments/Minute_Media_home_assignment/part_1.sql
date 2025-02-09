@@ -414,8 +414,6 @@ order by 8 desc;
 -- create a CSV with aggregated data - can i answer some of the above questions with aggregated data?
 
 SELECT
-  DATE(time_utc) AS date,
-  EXTRACT(HOUR FROM time_utc) AS hour,
   EXTRACT(DAYOFWEEK FROM time_utc) AS day_of_week, -- Sunday = 1, Monday = 2, ..., Saturday = 7
   CASE
     WHEN EXTRACT(HOUR FROM time_utc) BETWEEN 0 AND 5 THEN 'night'
@@ -476,6 +474,6 @@ invalid_sessions AS (
 SELECT distinct sessionid
 FROM
   invalid_sessions)
-group by 1,2,3,4,5,6,7,8,9
+group by 1,2,3,4,5,6,7
 
 
