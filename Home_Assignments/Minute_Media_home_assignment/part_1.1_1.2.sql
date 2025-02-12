@@ -91,42 +91,42 @@ from `mmtestout.gioiablayer.dsEmployeeTestFinal`
 group by 1
 order by 2 desc; --pageView and session are the most common types of events
 
--- can we spot these sessions: sessions that do not have session and pageView events reported (sessions from our clients that do not belong to our owned and operated sites)
-
-WITH filtered_events AS (
-  SELECT
-    sessionid,
-    ARRAY_AGG(DISTINCT event) AS event_types
-  FROM
-    `mmtestout.gioiablayer.dsEmployeeTestFinal`
-  GROUP BY
-    sessionid
-),
-invalid_sessions AS (
-  SELECT
-    sessionid
-  FROM
-    filtered_events
-  WHERE
-    -- Ensure no 'session' or 'pageView' events are present
-    NOT EXISTS (
-      SELECT 1
-      FROM UNNEST(event_types) AS event
-      WHERE event IN ('session', 'pageView')
-    )
-    AND
-    -- Ensure only the specified events are present
-    ARRAY_LENGTH(
-      ARRAY(
-        SELECT event
-        FROM UNNEST(event_types) AS event
-        WHERE event NOT IN ('videoPlayerEmbed', 'displayImpression', 'videoImpression')
-      )
-    ) = 0
-)
-SELECT count(distinct sessionid)
-FROM
-  invalid_sessions; --2,390,122 sessions (2% of 112,920,726) are missing session or pageview events because these are sessions that do not belong to MM sites.
+-- -- can we spot these sessions: sessions that do not have session and pageView events reported (sessions from our clients that do not belong to our owned and operated sites)
+--
+-- WITH filtered_events AS (
+--   SELECT
+--     sessionid,
+--     ARRAY_AGG(DISTINCT event) AS event_types
+--   FROM
+--     `mmtestout.gioiablayer.dsEmployeeTestFinal`
+--   GROUP BY
+--     sessionid
+-- ),
+-- invalid_sessions AS (
+--   SELECT
+--     sessionid
+--   FROM
+--     filtered_events
+--   WHERE
+--     -- Ensure no 'session' or 'pageView' events are present
+--     NOT EXISTS (
+--       SELECT 1
+--       FROM UNNEST(event_types) AS event
+--       WHERE event IN ('session', 'pageView')
+--     )
+--     AND
+--     -- Ensure only the specified events are present
+--     ARRAY_LENGTH(
+--       ARRAY(
+--         SELECT event
+--         FROM UNNEST(event_types) AS event
+--         WHERE event NOT IN ('videoPlayerEmbed', 'displayImpression', 'videoImpression')
+--       )
+--     ) = 0
+-- )
+-- SELECT count(distinct sessionid)
+-- FROM
+--   invalid_sessions; --2,390,122 sessions (2% of 112,920,726) are missing session or pageview events because these are sessions that do not belong to MM sites.
 
 
 -- what's the profile (day of week, time range, device, browser, platform, version, event) with the highest total number of sessions?
@@ -179,7 +179,7 @@ having count(distinct event) > 1
 order by 2 desc; -- 110,529,806 (98% of sessionid) have more than 1 events.
 
 
--- missing values in device column (if more than 30% --> imputation is not worth it and i drop the column)
+-- missing values in device column
 SELECT device, count(*)/(select sum(row_count)
 from
 (SELECT device, count(*) as row_count
@@ -440,6 +440,8 @@ and browser is not null
 and platform is not null
 and platformVersion is not null
 and revenue is not null
+and sessionid is not null
+and sessionid not in ('')
 and sessionid not in (WITH filtered_events AS (
   SELECT
     sessionid,
